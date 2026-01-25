@@ -1,0 +1,478 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Series Analysis Tool</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "xlsx": "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm",
+                "chart.js": "https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.js/+esm",
+                "regression": "https://cdn.jsdelivr.net/npm/regression@2.0.1/+esm",
+                "jstat": "https://cdn.skypack.dev/jstat@1.9.6"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="currentColor" d="M3,3H21V5H3V3M3,7H21V9H3V7M3,11H21V13H3V11M3,15H21V17H3V15M3,19H21V21H3V19Z"></path>
+                </svg>
+                <h1 id="app-title">Time Series Analysis</h1>
+            </div>
+            <div class="language-switch">
+                <button id="lang-toggle">العربية</button>
+            </div>
+            <div class="nav-items">
+                <button id="import-btn" class="nav-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M16,11V18.1L13.9,16L11.1,18.8L8.3,16L11.1,13.2L8.9,11L11.1,8.8L16,13.7V11H18V16H13V14H16Z"></path>
+                    </svg>
+                    <span id="import-text">Import Excel</span>
+                </button>
+                <button id="descriptive-btn" class="nav-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M16,11.78L20.24,4.45L21.97,5.45L16.74,14.5L10.23,10.75L5.46,19H22V21H2V3H4V17.54L9.5,8L16,11.78Z"></path>
+                    </svg>
+                    <span id="descriptive-text">Descriptive Statistics</span>
+                </button>
+                <button id="regression-btn" class="nav-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M4.2,10.7L19.8,5L20.5,6.9L6.4,12L19.8,17.1L19.1,19L4.2,13.3V10.7M19,2A2,2 0 0,1 21,4V20A2,2 0 0,1 19,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H19Z"></path>
+                    </svg>
+                    <span id="regression-text">Multiple Linear Regression</span>
+                </button>
+                <button id="ardl-btn" class="nav-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M2,2H4V20H22V22H2V2M6,16H8V11H10V16H12V8H14V16H16V11H18V16H20V4H22V16H20V18H6V16Z"></path>
+                    </svg>
+                    <span id="ardl-text">ARDL Analysis</span>
+                </button>
+                <button id="advanced-ts-btn" class="nav-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M7,2H17A2,2 0 0,1 19,4V20A2,2 0 0,0 17,22H7A2,2 0 0,1 5,20V4A2,2 0 0,1 7,2M7,4V8H17V4H7M7,10V12H9V10H7M11,10V12H13V10H11M15,10V12H17V10H15M7,14V16H9V14H7M11,14V16H13V14H11M15,14V16H17V14H15M7,18V20H9V18H7M11,18V20H13V18H11M15,18V20H17V18H15Z"></path>
+                    </svg>
+                    <span id="advanced-ts-text">Advanced Time Series</span>
+                </button>
+                <button id="stationarity-btn" class="nav-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M4,17L6.75,14.25L6.72,14.23C6.14,13.64 6.14,12.69 6.72,12.11L11.46,7.37L15.7,11.61L18,9.3L9.3,0.6L0.6,9.3L4,12.7V17M20.71,7.29L18,4.58L19.5,3.08L19.92,3.5L20.34,3.08L22.84,5.58L22.42,6L22.84,6.42L21.34,7.92L20.71,7.29" />
+                    </svg>
+                    <span id="stationarity-text">Stationarity Analysis</span>
+                </button>
+                <button id="panel-btn" class="nav-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M4,2H20A2,2 0 0,1 22,4V20A2,2 0 0,1 20,22H4A2,2 0 0,1 2,20V4A2,2 0 0,1 4,2M4,4V8H20V4H4M4,10V14H10V10H4M12,10V14H20V10H12M4,16V20H10V16H4M12,16V20H20V16H12Z"></path>
+                    </svg>
+                    <span id="panel-text">Panel Data Analysis</span>
+                </button>
+            </div>
+        </div>
+        <div class="main-content">
+            <div id="welcome-screen">
+                <h2 id="welcome-title">Welcome to Time Series Analysis Tool</h2>
+                <p id="welcome-desc">Import your Excel file to begin analyzing time series data</p>
+                <div class="drop-area">
+                    <svg viewBox="0 0 24 24" width="48" height="48">
+                        <path fill="currentColor" d="M19.35,10.04C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.04C2.34,8.36 0,10.91 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.04M19,2A2,2 0 0,1 21,4V20A2,2 0 0,1 19,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H19Z"></path>
+                    </svg>
+                    <p id="drop-text">Drag & drop your Excel file here or click to browse</p>
+                    <input type="file" id="file-input" accept=".xlsx,.xls" hidden>
+                </div>
+            </div>
+            <div id="data-view" class="hidden">
+                <div class="toggle-btn-container">
+                    <button id="toggle-table-btn" class="primary-btn">
+                        <span id="toggle-table-text">Hide Data Table</span>
+                    </button>
+                </div>
+                <div id="data-table-container">
+                    <table id="data-table">
+                        <thead>
+                            <tr id="table-header"></tr>
+                        </thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="stats-view" class="hidden">
+                <h3 id="stats-title">Descriptive Statistics</h3>
+                <div class="stats-controls">
+                    <div class="select-container">
+                        <label for="stats-vars" id="stats-vars-label">Variables:</label>
+                        <select id="stats-vars" multiple></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="stats-transform" id="stats-transform-label">Transformation:</label>
+                        <select id="stats-transform"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="stats-diff" id="stats-diff-label">Differencing:</label>
+                        <select id="stats-diff"></select>
+                    </div>
+                    <button id="run-stats" class="primary-btn">
+                        <span id="run-stats-text">Calculate Statistics</span>
+                    </button>
+                </div>
+                <div id="stats-container"></div>
+            </div>
+            <div id="regression-view" class="hidden">
+                <h3 id="regression-title">Multiple Linear Regression</h3>
+                <div class="regression-controls">
+                    <div class="select-container">
+                        <label for="dependent-var" id="dependent-var-label">Dependent Variable:</label>
+                        <select id="dependent-var"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="dependent-transform" id="dependent-transform-label">Transformation:</label>
+                        <select id="dependent-transform"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="dependent-diff" id="dependent-diff-label">Differencing:</label>
+                        <select id="dependent-diff"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="independent-vars" id="independent-vars-label">Independent Variables:</label>
+                        <select id="independent-vars" multiple></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="independent-transform" id="independent-transform-label">Transformation:</label>
+                        <select id="independent-transform"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="independent-diff" id="independent-diff-label">Differencing:</label>
+                        <select id="independent-diff"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="time-series-model" id="time-series-model-label">Time Series Model:</label>
+                        <select id="time-series-model"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="dummy-year-column" id="dummy-year-column-label">Year Column for Dummies:</label>
+                        <select id="dummy-year-column"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="dummy-years" id="dummy-years-label">Select Years for Dummies:</label>
+                        <select id="dummy-years" multiple></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="dummy-quarters" id="dummy-quarters-label">Include Quarters:</label>
+                        <select id="dummy-quarters">
+                            <option value="none">No Quarters</option>
+                            <option value="q1">Q1</option>
+                            <option value="q2">Q2</option>
+                            <option value="q3">Q3</option>
+                            <option value="q4">Q4</option>
+                        </select>
+                    </div>
+                    <button id="run-regression" class="primary-btn">
+                        <span id="run-regression-text">Run Regression</span>
+                    </button>
+                </div>
+                <div id="regression-results"></div>
+                <div id="regression-chart-container">
+                    <canvas id="regression-chart"></canvas>
+                </div>
+            </div>
+            <div id="ardl-view" class="hidden">
+                <h3 id="ardl-title">ARDL Analysis</h3>
+                <div class="ardl-controls">
+                    <div class="select-container">
+                        <label for="ardl-dependent-var" id="ardl-dependent-var-label">Dependent Variable:</label>
+                        <select id="ardl-dependent-var"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-dependent-transform" id="ardl-dependent-transform-label">Transformation:</label>
+                        <select id="ardl-dependent-transform"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-dependent-diff" id="ardl-dependent-diff-label">Differencing:</label>
+                        <select id="ardl-dependent-diff"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-auto-lag">Automatic Lag Selection:</label>
+                        <input type="checkbox" id="ardl-auto-lag">
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-ic-method">Information Criterion:</label>
+                        <select id="ardl-ic-method" disabled>
+                            <option value="aic">AIC</option>
+                            <option value="sic">SIC/BIC</option>
+                            <option value="hqc">HQC</option>
+                        </select>
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-dependent-lags" id="ardl-dependent-lags-label">Dependent Variable Lags:</label>
+                        <select id="ardl-dependent-lags">
+                            <option value="0">0</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-independent-vars" id="ardl-independent-vars-label">Independent Variables:</label>
+                        <select id="ardl-independent-vars" multiple></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-independent-transform" id="ardl-independent-transform-label">Transformation:</label>
+                        <select id="ardl-independent-transform"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-independent-diff" id="ardl-independent-diff-label">Differencing:</label>
+                        <select id="ardl-independent-diff"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-independent-lags" id="ardl-independent-lags-label">Independent Variables Lags:</label>
+                        <select id="ardl-independent-lags">
+                            <option value="0">0</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-time-series-model" id="ardl-time-series-model-label">Time Series Model:</label>
+                        <select id="ardl-time-series-model"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-forecast">Include Forecasts:</label>
+                        <input type="checkbox" id="ardl-forecast">
+                    </div>
+                    <div class="select-container">
+                        <label for="ardl-forecast-periods">Forecast Periods:</label>
+                        <select id="ardl-forecast-periods">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="4" selected>4</option>
+                            <option value="8">8</option>
+                            <option value="12">12</option>
+                        </select>
+                    </div>
+                    <button id="run-ardl" class="primary-btn">
+                        <span id="run-ardl-text">Run ARDL Analysis</span>
+                    </button>
+                </div>
+                <div id="ardl-results"></div>
+                <div id="ardl-chart-container">
+                    <canvas id="ardl-chart"></canvas>
+                </div>
+            </div>
+            <div id="stationarity-view" class="hidden">
+                <h3 id="stationarity-title">Time Series Stationarity Analysis</h3>
+                <div class="stationarity-controls">
+                    <div class="select-container">
+                        <label for="stationarity-vars" id="stationarity-vars-label">Variables:</label>
+                        <select id="stationarity-vars" multiple></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="stationarity-transform" id="stationarity-transform-label">Transformation:</label>
+                        <select id="stationarity-transform"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="stationarity-diff" id="stationarity-diff-label">Differencing:</label>
+                        <select id="stationarity-diff"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="stationarity-test" id="stationarity-test-label">Test Type:</label>
+                        <select id="stationarity-test">
+                            <option value="adf">Augmented Dickey-Fuller</option>
+                            <option value="pp">Phillips-Perron</option>
+                            <option value="kpss">KPSS</option>
+                        </select>
+                    </div>
+                    <div class="select-container">
+                        <label for="stationarity-lag" id="stationarity-lag-label">Max Lag:</label>
+                        <select id="stationarity-lag">
+                            <option value="auto">Automatic</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="4">4</option>
+                            <option value="8">8</option>
+                            <option value="12">12</option>
+                        </select>
+                    </div>
+                    <div class="select-container">
+                        <label for="arma-p" id="arma-p-label">AR Order (p):</label>
+                        <select id="arma-p">
+                            <option value="0">0</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="select-container">
+                        <label for="arma-q" id="arma-q-label">MA Order (q):</label>
+                        <select id="arma-q">
+                            <option value="0">0</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <button id="run-stationarity" class="primary-btn">
+                        <span id="run-stationarity-text">Run Analysis</span>
+                    </button>
+                </div>
+                <div id="stationarity-results"></div>
+                <div id="stationarity-chart-container">
+                    <canvas id="stationarity-chart"></canvas>
+                </div>
+            </div>
+            <div id="panel-view" class="hidden">
+                <h3 id="panel-title">Panel Data Analysis</h3>
+                <div class="panel-controls">
+                    <div class="select-container">
+                        <label for="panel-entity-col" id="panel-entity-col-label">Entity ID Column:</label>
+                        <select id="panel-entity-col"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="panel-time-col" id="panel-time-col-label">Time Period Column:</label>
+                        <select id="panel-time-col"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="panel-dependent-var" id="panel-dependent-var-label">Dependent Variable:</label>
+                        <select id="panel-dependent-var"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="panel-independent-vars" id="panel-independent-vars-label">Independent Variables:</label>
+                        <select id="panel-independent-vars" multiple></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="panel-model-type" id="panel-model-type-label">Model Type:</label>
+                        <select id="panel-model-type">
+                            <option value="pooled">Pooled OLS</option>
+                            <option value="fixed">Fixed Effects</option>
+                            <option value="random">Random Effects</option>
+                            <option value="between">Between Effects</option>
+                        </select>
+                    </div>
+                    <div class="select-container">
+                        <label for="panel-effects" id="panel-effects-label">Effects:</label>
+                        <select id="panel-effects">
+                            <option value="entity">Entity Effects</option>
+                            <option value="time">Time Effects</option>
+                            <option value="both">Two-way Effects</option>
+                        </select>
+                    </div>
+                    <div class="select-container">
+                        <label for="panel-robust" id="panel-robust-label">Robust Standard Errors:</label>
+                        <input type="checkbox" id="panel-robust">
+                    </div>
+                    <div class="select-container">
+                        <label for="panel-cluster" id="panel-cluster-label">Cluster by Entity:</label>
+                        <input type="checkbox" id="panel-cluster">
+                    </div>
+                    <button id="run-panel" class="primary-btn">
+                        <span id="run-panel-text">Run Panel Analysis</span>
+                    </button>
+                </div>
+                <div id="panel-results"></div>
+                <div id="panel-chart-container">
+                    <canvas id="panel-chart"></canvas>
+                </div>
+            </div>
+            <div id="advanced-ts-view" class="hidden">
+                <h3 id="advanced-ts-title">Advanced Time Series Analysis</h3>
+                <div class="advanced-ts-controls">
+                    <div class="select-container">
+                        <label for="adv-model-type">Model Type:</label>
+                        <select id="adv-model-type">
+                            <option value="var">Vector Autoregression (VAR)</option>
+                            <option value="vecm">Vector Error Correction Model (VECM)</option>
+                            <option value="johansen">Johansen Cointegration Test</option>
+                            <option value="arma">ARMA Model</option>
+                        </select>
+                    </div>
+                    <div class="select-container">
+                        <label for="adv-variables" id="adv-variables-label">Variables:</label>
+                        <select id="adv-variables" multiple></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="adv-transform" id="adv-transform-label">Transformation:</label>
+                        <select id="adv-transform"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="adv-diff" id="adv-diff-label">Differencing:</label>
+                        <select id="adv-diff"></select>
+                    </div>
+                    <div class="select-container">
+                        <label for="adv-lags">Lag Order:</label>
+                        <select id="adv-lags">
+                            <option value="1">1</option>
+                            <option value="2" selected>2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="8">8</option>
+                        </select>
+                    </div>
+                    <div class="select-container">
+                        <label for="adv-deterministic">Deterministic Terms:</label>
+                        <select id="adv-deterministic">
+                            <option value="none">None</option>
+                            <option value="const" selected>Constant</option>
+                            <option value="trend">Trend</option>
+                            <option value="both">Constant and Trend</option>
+                        </select>
+                    </div>
+                    <div class="select-container vecm-option hidden">
+                        <label for="adv-coint-rank">Cointegration Rank:</label>
+                        <select id="adv-coint-rank">
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                    <div class="select-container arma-option hidden">
+                        <label for="adv-ar-order">AR Order (p):</label>
+                        <select id="adv-ar-order">
+                            <option value="0">0</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="select-container arma-option hidden">
+                        <label for="adv-ma-order">MA Order (q):</label>
+                        <select id="adv-ma-order">
+                            <option value="0">0</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="select-container">
+                        <label for="adv-forecast">Forecast Periods:</label>
+                        <select id="adv-forecast">
+                            <option value="0">No Forecast</option>
+                            <option value="1">1</option>
+                            <option value="4" selected>4</option>
+                            <option value="8">8</option>
+                            <option value="12">12</option>
+                        </select>
+                    </div>
+                    <button id="run-adv-ts" class="primary-btn">
+                        <span id="run-adv-ts-text">Run Analysis</span>
+                    </button>
+                </div>
+                <div id="adv-ts-results"></div>
+                <div id="adv-ts-chart-container">
+                    <canvas id="adv-ts-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="config.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
