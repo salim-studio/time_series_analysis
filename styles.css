@@ -126,7 +126,11 @@ body {
     padding: 30px;
     overflow-y: auto;
 }
-
+ main {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+    }
 #welcome-screen {
     text-align: center;
     max-width: 700px;
